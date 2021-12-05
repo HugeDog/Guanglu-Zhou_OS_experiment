@@ -29,22 +29,24 @@ def mm_init(size):
     table_free = []
     table_used = []
     table_free.append([0,size])
-    
+    return table_free[0][0]
+
 def get_last(name,size):
     global table_free,table_used
     if table_free == []:
-        return "Absolutely No Space !"
+        return ""
     maxitem = table_free[0]
     for item in table_free:
         if item[1] > maxitem[1]:
             maxitem = item
     ### 得到了最大的
     if maxitem[1] == size:
+        ret = maxitem[0]
         temp = maxitem.copy()
         table_free.remove(maxitem)
         temp.extend([name])
         table_used.append(temp)
-        return "="
+        return ret
     elif maxitem[1] > size:
         temp = maxitem
         list1 = []
@@ -59,28 +61,28 @@ def get_last(name,size):
         # table_free.remove(temp)
         # table_free.append([temp_num0,temp_num1])
         table_used.append(list1)
-        return ">"
+        return temp_num0
     else:
-        return "No Space!"
+        return ""
 
 def get_best(name,size):
     global table_free,table_used
     flag = 0
     if table_free == []:
-        return "Absolutely No Space !"
+        return ""
     maxitem = [-1,10000000000000000]
     for item in table_free:
         if item[1] >= size:
             if item[1] < maxitem[1]:
                 maxitem = item
     if maxitem[0] == -1:
-        return "No Space!"
+        return ""
     elif maxitem[1] == size:
         temp = maxitem.copy()
         table_free.remove(maxitem)
         temp.append(name)
         table_used.append(temp)
-        return '='
+        return temp[0]
     elif maxitem[1] > size:
         temp = maxitem.copy()
         num1 = temp[0]
@@ -90,10 +92,10 @@ def get_best(name,size):
         maxitem[0] = num11
         maxitem[1] = num22
         table_used.append([num1,size,name])
-        return '>'
+        return num1
     else:
         pass
-    return "Done !"
+    return ""
 
 def get_fit(name,size):
     global table_free,table_used
@@ -109,22 +111,22 @@ def get_fit(name,size):
             table_used.append([num0,size,name])
             item[0] = num00
             item[1] = num11 
-            return ">"
+            return num0
         elif item[1] == size:
             temp = item.copy()
             table_free.remove(item)
             temp.append(name)  
             table_used.append(temp)
             flag = 1
-            return "="
+            return temp[0]
         else:
             pass
-    return "No Space!"
+    return ""
     
 def get_fit_space(name,size):
     global name_table,status_global,table_free,table_used
     if name in name_table:
-        return "Already Exists!"
+        return ""
     status = status_global
     table_free.sort(key = lambda x:x[0])
     table_used.sort(key = lambda x:x[0])
@@ -136,7 +138,7 @@ def get_fit_space(name,size):
         temp = get_best(name,size)
     else:
         print("Error!!")
-    if temp != "No Space!":
+    if temp != "":
         name_table.append(name)
     return temp 
 
@@ -178,49 +180,40 @@ def squeeze():
     return "Done !"
 
 def mm_request(name,size):
-    get_fit_space(name,size)
+     return get_fit_space(name,size)
 
 def mm_release(name):
     global table_used,table_free
+    flag = 0
     for item in table_used:
         if item[2] == name:
+            flag = 1
             temp = item.copy()
             table_used.remove(item)
             name_table.remove(name)
             list1 = [temp[0],temp[1]]
+            table_free.append(list1)
+            table_free.sort(key = lambda x: x[0])
+            closure_()
             break
         else:
-            return "Find Nothing!"
-    table_free.append(list1)
-    table_free.sort(key = lambda x: x[0])
-    closure_()
-    # pjiougyuutgjyvfhgujhilkjo;ihghikjol;hkhh;j
+            pass
+    if flag == 0:
+        return "Find Nothing!"
     
-    
+def print_status():
+    f = 0
+    print("空闲区间_ ，使用区间 ×")
+    for i in table_free:
+        x_temp = i[0] - f
+        print("%s%s"%(x_temp*"×",i[1]*"_"),end = "")
+        f = i[0] + i[1]
+
 if __name__ == '__main__':
     mm_init(100)
-    mm_request('aa',10)
+    mm_request('a',20)
+    mm_request('b',30)
+    mm_request('c',10)
+    mm_release('b')
     print(table_free)
-    print(table_used)
-    mm_request('bb',30)
-    print(table_free)
-    print(table_used)
-    mm_release('bb')
-    print(table_free)
-    print(table_used)
-    mm_request('cc',20)
-    print(table_free)
-    print(table_used)
-    
-    # print(mem)
-    # print(table_free)
-    # table_used = [[20,10,"a"],[40,30,'bb']]
-    # status_global = 0
-    
-    # name = "sss"
-    # size = 10
-    # types = get_fit_space(name,size)
-    # get_fit_space('1222',15)
-    # # squeeze() # 40  60  0 10 a  10 30 bb
-    # print(table_used)
-    # print(table_free)
+    print(print_status())
