@@ -11,7 +11,7 @@ name_table = []
 mem = []
 mem_size = 100
 status_global = 0  # 最差 -1    最先  0     最佳 1
-
+busy_table = []
 
 def change_status():
     global status_global
@@ -126,7 +126,7 @@ def get_fit(name,size):
 def get_fit_space(name,size):
     global name_table,status_global,table_free,table_used
     if name in name_table:
-        return ""
+        return "?"
     status = status_global
     table_free.sort(key = lambda x:x[0])
     table_used.sort(key = lambda x:x[0])
@@ -140,6 +140,10 @@ def get_fit_space(name,size):
         print("Error!!")
     if temp != "":
         name_table.append(name)
+    else:
+        temps = [name,size]
+        if temps not in busy_table:
+            busy_table.append(temps)
     return temp 
 
 def closure_():
@@ -200,6 +204,14 @@ def mm_release(name):
             pass
     if flag == 0:
         return "Find Nothing!"
+    if busy_table != []:
+        k = mm_request(busy_table[0][0],busy_table[0][1])
+        if k == "?":
+            busy_table.pop(0)
+        elif k != "":
+            busy_table.pop(0)
+        else:
+            pass
     
 def print_status():
     f = 0
@@ -211,6 +223,7 @@ def print_status():
 
 if __name__ == '__main__':
     mm_init(100)
+    change_status()
     mm_request('a',20)
     mm_request('b',30)
     print(name_table)
