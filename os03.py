@@ -16,8 +16,8 @@ busy_table = []
 def change_status():
     global status_global
     while True:
-        inputs = input("Input Your Status:")
-        if inputs.digit() and inputs in ['0','-1','1']:
+        inputs = input("Input Your Status(-1:Worst||0:Normal||1:Best):")
+        if (inputs.isdigit() or inputs == "-1") and inputs in ['0','-1','1']:
             break
     inputs = int(inputs)
     status_global = inputs
@@ -230,6 +230,9 @@ if __name__ == '__main__':
     mm_request('c',10)
     print(name_table)
     mm_release('b')
+    mm_request('d',10)
+    mm_request('e',40)
+    mm_request('f',10)
     print(name_table)
     print(table_free)
     # print(print_status())
