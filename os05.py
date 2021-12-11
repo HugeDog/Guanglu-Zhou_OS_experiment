@@ -23,7 +23,20 @@ def FCFS(start):
         res.append(temp)
         pos = item
     return list_r,res,sums,round(sums/len(list_r),1)
-        
+
+def ret(start,lists):
+    sums = 0
+    seq = []
+    res = []
+    pos = start
+    for item in lists:
+        temp = abs(item - pos)
+        sums += temp
+        seq.append(item)
+        res.append(temp)
+        pos = item
+    return seq,res,sums,pos
+              
 def SSTF(start):
     list_r = req_list.copy()
     lenth = len(list_r)
@@ -46,14 +59,29 @@ def SSTF(start):
     return seq,res,sums,round(sums/lenth,2)
         
 def elevator(start):
-    pass
-#  累了，爬不动了，先写到这里吧
-#  想摸鱼了
-#  先打一把游戏，和平精英 乖巧大狗狗
-
+    list_r = req_list.copy()
+    if list_r ==[]:
+        return [],[],0,0
+    list_r.sort()
+    for i in range(len(list_r)):
+        if list_r[i] >= start:
+            pos = i
+            break
+    list1 = list_r[0:pos]
+    list1.reverse()
+    list2 = list_r[pos:]
+    x1, x2, x3, pos = ret(100,list2) 
+    y1, y2, y3, _ = ret(pos,list1)
+    x1.extend(y1)
+    x2.extend(y2)
+    sums = x3 + y3
+    avg = round((sums/len(list_r)),1)
+    return x1, x2, sums, avg
+        
 if __name__ == '__main__':
-    a,b,c,d= SSTF(100)
+    a,b,c,d= elevator(100)
     print(a)
     print(b)
     print(c)
     print(d)
+    
